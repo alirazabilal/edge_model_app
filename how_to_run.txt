@@ -1,0 +1,10 @@
+cd edge_model_app
+
+flutter pub get
+
+flutter run
+
+
+
+(for generating apk):
+flutter build apk --release
