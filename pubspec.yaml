@@ -37,6 +37,9 @@ dependencies:
   speech_to_text: ^7.3.0
   cupertino_icons: ^1.0.8
   permission_handler: ^11.3.1
+  shared_preferences: ^2.2.2
+  string_similarity: ^2.0.0
+  google_fonts: ^6.2.1
 
 
 
@@ -67,6 +70,7 @@ flutter:
     - assets/ggml-tarteel-whisper-q4.bin
     - assets/vocab.json
     - assets/merges.txt
+    - assets/quran_csv.csv
 
 
   # To add assets to your application, add an assets section, like this:

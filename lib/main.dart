@@ -2,9 +2,17 @@ import 'dart:ffi';
 import 'dart:io';
 import 'package:ffi/ffi.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'memorization_page.dart'; // Your existing MemorizationPage
+import 'home_page.dart'; // Enhanced Home
+import 'settings_page.dart'; // Settings
+import 'progress_page.dart'; // Progress
+import 'about_page.dart'; // About
+import 'login_screen.dart'; // Login Screen
+import 'register_screen.dart'; // Register Screen
 
 void main() {
   runApp(const MyApp());
@@ -16,15 +24,205 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Whisper Transcription')),
-        body: const TranscriptionWidget(),
+      title: 'Quran Memorization Aid',
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+        scaffoldBackgroundColor: Colors.transparent,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          elevation: 0,
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          ),
+        ),
+        cardTheme: CardThemeData(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          elevation: 4,
+          color: Colors.white.withOpacity(0.9),
+        ),
+        fontFamily: 'Amiri',
+        textTheme: const TextTheme(
+          bodyLarge: TextStyle(color: Colors.black87),
+          bodyMedium: TextStyle(color: Colors.black54),
+        ),
+      ),
+      initialRoute: '/',
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const LoginScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            );
+
+          case '/register':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const RegisterScreen(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            );
+
+          case '/main-home':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MainHomePage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            );
+
+          case '/enhanced-home':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const HomePage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+                  child: child,
+                );
+              },
+            );
+
+          case '/memorization':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const MemorizationPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(begin: const Offset(1, 0), end: Offset.zero).animate(animation),
+                  child: child,
+                );
+              },
+            );
+
+          case '/progress':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const ProgressPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            );
+
+          case '/settings':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const SettingsPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return SlideTransition(
+                  position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(animation),
+                  child: child,
+                );
+              },
+            );
+
+          case '/about':
+            return PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => const AboutPage(),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(opacity: animation, child: child);
+              },
+            );
+
+          default:
+            return null;
+        }
+      },
+    );
+  }
+}
+
+// Wrapper for your old UI: Preserves exact old Scaffold + TranscriptionWidget, adds Drawer & gradient
+class MainHomePage extends StatelessWidget {
+  const MainHomePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text('Whisper Transcription'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            const DrawerHeader(
+              decoration: BoxDecoration(color: Colors.teal),
+              child: Text(
+                'Quran Memorization Aid',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.home),
+              title: const Text('Enhanced Home'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/enhanced-home');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.book),
+              title: const Text('Memorization'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/memorization');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.trending_up),
+              title: const Text('Progress'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/progress');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: const Text('Settings'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/settings');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.info),
+              title: const Text('About'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/about');
+              },
+            ),
+          ],
+        ),
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFFE8F5E8), Color(0xFFFFF8E1)],
+          ),
+        ),
+        child: const TranscriptionWidget(),
       ),
     );
   }
 }
 
-// ignore: library_private_types_in_public_api
+// Your EXACT old TranscriptionWidget (unchanged)
 class TranscriptionWidget extends StatefulWidget {
   const TranscriptionWidget({super.key});
 
@@ -42,7 +240,6 @@ class _TranscriptionWidgetState extends State<TranscriptionWidget> {
   @override
   void initState() {
     super.initState();
-    // Load libwhisper.so
     try {
       whisperLib = DynamicLibrary.open('libwhisper.so');
       whisperTranscribe = whisperLib!.lookupFunction<
@@ -59,7 +256,6 @@ class _TranscriptionWidgetState extends State<TranscriptionWidget> {
     copyAssetsToDocuments();
   }
 
-  // ignore: use_build_context_synchronously
   Future<void> copyAssetsToDocuments() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -133,14 +329,64 @@ class _TranscriptionWidgetState extends State<TranscriptionWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(transcription.isEmpty ? 'No transcription yet' : transcription),
+          Expanded(
+            child: Center(
+              child: Text(
+                transcription.isEmpty ? 'No transcription yet' : transcription,
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
           ElevatedButton(
             onPressed: isRecording ? stopRecording : startRecording,
             child: Text(isRecording ? 'Stop Recording' : 'Start Recording'),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () => Navigator.pushNamed(context, '/memorization'),
+            child: const Text('Open Memorization Page'),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/enhanced-home'),
+                icon: const Icon(Icons.home),
+                label: const Text('Enhanced Home'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/settings'),
+                icon: const Icon(Icons.settings),
+                label: const Text('Settings'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/progress'),
+                icon: const Icon(Icons.trending_up),
+                label: const Text('Progress'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              ),
+              ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/about'),
+                icon: const Icon(Icons.info),
+                label: const Text('About'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
+              ),
+            ],
           ),
         ],
       ),
